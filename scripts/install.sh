@@ -80,16 +80,16 @@ fi
 install_chapter scripts/install-solc.sh
 
 # go
-install_chapter scripts/install-go.sh
+#install_chapter scripts/install-go.sh
 
 # geth
-install_chapter scripts/install-geth.sh
+#install_chapter scripts/install-geth.sh
 
 # env
 install_chapter scripts/install-virtualenv.sh
 
 # deploy.py andtests on testRPC
-install_chapter scripts/install-initialize.sh
+#install_chapter scripts/install-initialize.sh
 
 
 echo

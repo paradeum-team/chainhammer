@@ -88,10 +88,10 @@ def clientType(w3):
     * https://github.com/paritytech/parity-ethereum/issues/9432
     """
 
-    consensus = "???"
-    chainName = "???"
-    networkId = -1
-    chainId = -1
+    consensus = "clique"
+    chainName = "poa"
+    networkId = 65534
+    chainId = 65534
     
     try:
         answer = curl_post(method="net_version")

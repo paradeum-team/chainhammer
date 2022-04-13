@@ -621,7 +621,7 @@ def load_prepare_plot_save(DBFILE, NAME_PREFIX,
     simple_stats(conn)
     df = read_whole_table_into_dataframe(conn)
     conn.close()
-    assert check_timestamp_format(df)
+    #assert check_timestamp_format(df)
     add_columns(df)
     show_peak_TPS(df)
     

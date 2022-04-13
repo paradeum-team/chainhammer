@@ -14,8 +14,8 @@
 
 # better keep the same port :8545 everywhere, and instead
 # patch the docker-compose.yml files, see ../networks/quorum-configure.sh
-RPCaddress='http://localhost:8545'
-RPCaddress2='http://localhost:8545'
+RPCaddress='http://172.17.132.231:8545'
+RPCaddress2='http://172.17.132.231:8545'
 
 # use this for unittesting with TestRPCProvider
 # RPCaddress, RPCaddress2 = None, None
@@ -79,7 +79,7 @@ if PARITY_UNLOCK_EACH_TRANSACTION and ROUTE=="RPC":
 # a successful transaction; because difference is used as sign for a FAILED
 # transaction in the case of those clients which do not have a
 # 'transactionReceipt.status' field yet
-GAS_FOR_SET_CALL = 90000
+GAS_FOR_SET_CALL = 6000000
 
 # only for Quorum:
 # set this to a list of public keys for privateFor-transactions,
@@ -95,6 +95,13 @@ EXAMPLE_BIN = "0x6060604052341561000f57600080fd5b6040516020806101498339810160405
 FILE_CONTRACT_SOURCE  = "contract.sol"
 FILE_CONTRACT_ABI     = "contract-abi.json"
 FILE_CONTRACT_ADDRESS = "contract-address.json"
+FILE_CONTRACT_TOKENID = "contract-tokenid.json" # 铸币时，保存tokenId
+NFT_MINT_AMOUNT_PER = 500  # 单个nft铸币的数量(1155)
+NFT_BURN_AMOUNT_PER=10 #销毁数量(1155)
+NFT_GIFT_AMOUNT_PER = 10 # 赠予数量(1155)
+NFT_GIFT_ADDRESS = "0x8fd86498ff1b750454f5187cc0b2bc6b51d0e07b" #赠予地址to，
+NFT_TOKEN_URI="https://pnode.solarfs.io/dn/file/1e00000000000e57f41272545f3403c31eef506c78a37399f3456e9ce936756204061c9fb5281fa541a2b2983cb5d005d77f6edfeaffe57ac9c79fee3762969e/meta8.json" #TOKEN_URI
+NFT_OPT_METHOD="ERC1155MINT" # ERC1155GIFT,ERC1155BURN,ERC721MINT,ERC721GIFT
 
 # account passphrase
 FILE_PASSPHRASE = "account-passphrase.txt"

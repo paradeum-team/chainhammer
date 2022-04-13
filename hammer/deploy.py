@@ -31,7 +31,7 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from hammer.config import RPCaddress, TIMEOUT_DEPLOY, PARITY_UNLOCK_EACH_TRANSACTION
+from hammer.config import FILE_CONTRACT_TOKENID, RPCaddress, TIMEOUT_DEPLOY, PARITY_UNLOCK_EACH_TRANSACTION
 from hammer.config import FILE_CONTRACT_SOURCE, FILE_CONTRACT_ABI, FILE_CONTRACT_ADDRESS
 from hammer.config import GAS_FOR_SET_CALL
 
@@ -109,6 +109,20 @@ def loadFromDisk():
     contractAddress = json.load(open(FILE_CONTRACT_ADDRESS, 'r'))
     abi = json.load(open(FILE_CONTRACT_ABI, 'r'))
     return contractAddress["address"], abi
+
+
+def saveTokenIdsToDisk(tokenIds):
+    """
+    save mint tokenIds to disk. For other ops.like gift,burn
+    """
+    json.dump(tokenIds,open(FILE_CONTRACT_TOKENID,'w'))
+
+def loadTokenIdsFromDisk():
+    """
+    load tokenIds from previous mint opt 
+    """
+    tokenIds = json.load(open(FILE_CONTRACT_TOKENID, 'r'))
+    return tokenIds
 
 
 def contract_CompileDeploySave(contract_source_file):

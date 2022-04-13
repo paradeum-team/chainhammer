@@ -30,11 +30,12 @@ from web3.utils.abi import filter_by_name, abi_to_signature
 from web3.utils.encoding import pad_hex
 
 # chainhammer:
-from hammer.config import RPCaddress, ROUTE, PRIVATE_FOR, EXAMPLE_ABI
+from hammer.config import FILE_CONTRACT_TOKENID, RPCaddress, ROUTE, PRIVATE_FOR, EXAMPLE_ABI
 from hammer.config import PARITY_UNLOCK_EACH_TRANSACTION
 from hammer.config import GAS_FOR_SET_CALL
 from hammer.config import FILE_LAST_EXPERIMENT, EMPTY_BLOCKS_AT_END
-from hammer.deploy import loadFromDisk
+from hammer.config import NFT_MINT_AMOUNT_PER, NFT_BURN_AMOUNT_PER,NFT_GIFT_AMOUNT_PER,NFT_GIFT_ADDRESS,NFT_TOKEN_URI
+from hammer.deploy import loadFromDisk, loadTokenIdsFromDisk, saveTokenIdsToDisk
 from hammer.clienttools import web3connection, unlockAccount
 
 
@@ -51,6 +52,47 @@ def initialize_fromAddress():
                                  abi=abi)
     return myContract
     
+
+
+def contract_mint_1155_foundation_via_web3(contract, tokenId,serialNo, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the .set(serialNo) method, possibly with 'privateFor' tx-property
+    using the web3 method 
+    """
+    txParameters = {'from': w3.eth.defaultAccount,
+                    'gas' : gas}
+    if privateFor:
+        txParameters['privateFor'] = privateFor  # untested
+        
+    # pprint (txParameters)
+    
+    if PARITY_UNLOCK_EACH_TRANSACTION:
+        unlockAccount()
+        
+    tx = contract.functions.set( x=serialNo ).transact(txParameters)
+    # print ("[sent via web3]", end=" ")  # TODO: not print this here but at start
+    print (".", end=" ")  # TODO: not print this here but at start
+    tx = w3.toHex(tx)
+    
+    if not hashes==None:
+        hashes.append(tx)
+    return tx
+
+def contract_gift_1155_foundation_via_web3(contract, tokenId,serialNo, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the .set(serialNo) method, possibly with 'privateFor' tx-property
+    using the web3 method 
+    """
+    print("contract_gift_1155_foundation_via_web3 will to do ... next .")
+    return None
+def contract_burn_1155_foundation_via_web3(contract, tokenId,serialNo, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the .set(serialNo) method, possibly with 'privateFor' tx-property
+    using the web3 method 
+    """
+    print("contract_burn_1155_foundation_via_web3 will to do ... next .")
+    return None
+
 
 def contract_set_via_web3(contract, arg, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
     """
@@ -102,6 +144,7 @@ def contract_method_ID(methodname, abi):
     build the 4 byte ID, from abi & methodname
     """
     method_abi = filter_by_name(methodname, abi)
+    print("method_abi={}".format(method_abi))
     assert(len(method_abi)==1)
     method_abi = method_abi[0]
     method_signature = abi_to_signature(method_abi) 
@@ -119,8 +162,8 @@ def argument_encoding(contract_method_ID, arg):
     arg_hex_padded = pad_hex ( arg_hex, bit_size=256)
     data = contract_method_ID + arg_hex_padded [2:]
     return data
-    
-    
+
+
 def timeit_argument_encoding():
     """
     test the above:
@@ -135,6 +178,106 @@ def timeit_argument_encoding():
     print (data)
     # no need to precalculate, it takes near to no time:
     print ("Doing that %d times ... took %.2f seconds" % (reps, timer) )
+
+def contract_mint_1155_foundation_via_RPC(contract, tokenId,serialNo, hashes = None,privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the .set(arg) method numTx=10
+    not going through web3
+    but directly via RPC
+    
+    suggestion by @jpmsam 
+    https://github.com/jpmorganchase/quorum/issues/346#issuecomment-382216968
+    """
+    
+    method_ID = contract_method_ID("mintItem", contract.abi) # TODO: make this "set" flexible for any method name
+    #铸币参数address,tokenId，amount，uri
+    uri=NFT_TOKEN_URI
+    mintAmount=NFT_MINT_AMOUNT_PER
+    argsTrups=(w3.eth.defaultAccount,tokenId,mintAmount,uri)
+    
+    print('序号{0}参数长度{1},vlaue={2}： '.format(argsTrups[2],len(argsTrups),argsTrups))
+    data=contract.encodeABI(fn_name="mintItem", args=[w3.eth.defaultAccount,tokenId,serialNo,uri])
+    print("inputData={}".format(data))
+
+    return contract_exec_RPC(data)
+
+def contract_gift_1155_foundation_via_RPC(contract, tokenId,serialNo, hashes = None,privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the .gift(from,to,tokenId,amount) method numTx=10
+    not going through web3
+    but directly via RPC
+    
+    suggestion by @jpmsam 
+    https://github.com/jpmorganchase/quorum/issues/346#issuecomment-382216968
+    """
+    
+    method_ID = contract_method_ID("gift", contract.abi) # TODO: make this "set" flexible for any method name
+    #铸币参数address,tokenId，amount，uri
+    fromAddress = w3.eth.defaultAccount
+    toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
+    giftAmount = NFT_GIFT_AMOUNT_PER
+    argsTrups=(fromAddress,toAddress,tokenId,giftAmount)
+    
+    print('序号{0}参数长度{1},vlaue={2}： '.format(serialNo,len(argsTrups),argsTrups))
+    data=contract.encodeABI(fn_name="gift", args=argsTrups)
+    print("inputData={}".format(data))
+
+    return contract_exec_RPC(data)
+
+def contract_burn_1155_foundation_via_RPC(contract, tokenId,serialNo, hashes = None,privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the .burn(account,tokenId,amount) method numTx=10
+    not going through web3
+    but directly via RPC
+    
+    suggestion by @jpmsam 
+    https://github.com/jpmorganchase/quorum/issues/346#issuecomment-382216968
+    """
+    
+    method_ID = contract_method_ID("burn", contract.abi) # TODO: make this "set" flexible for any method name
+    #铸币参数address,tokenId，amount，uri
+    account = w3.eth.defaultAccount
+    burnAmount = NFT_BURN_AMOUNT_PER
+    argsTrups=(account,tokenId,burnAmount)
+    
+    print('序号{0}参数长度{1},vlaue={2}： '.format(serialNo,len(argsTrups),argsTrups))
+    data=contract.encodeABI(fn_name="burn", args=argsTrups)
+    print("inputData={}".format(data))
+
+    return contract_exec_RPC(data)
+
+####
+def contract_exec_RPC(data, hashes = None,privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+    """
+    call the rpc 
+    """
+   
+    txParameters = {'from': w3.eth.defaultAccount, 
+                    'to' : contract.address,
+                    'gas' : w3.toHex(gas),
+                    'data' : data} 
+    if privateFor:
+        txParameters['privateFor'] = privateFor  # untested
+    
+    print("txParameters={0}".format(txParameters))
+    method = 'eth_sendTransaction'
+    payload= {"jsonrpc" : "2.0",
+               "method" : method,
+               "params" : [txParameters],
+               "id"     : 1}
+    headers = {'Content-type' : 'application/json'}
+    response = requests.post(RPCaddress, json=payload, headers=headers)
+    print('raw json response: {}'.format(response.json()))
+    tx = response.json()['result']
+        
+    # print ("[sent directly via RPC]", end=" ") # TODO: not print this here but at start
+    print (".", end=" ") # TODO: not print this here but at start
+    
+    if not hashes==None:
+        hashes.append(tx)
+    return tx
+
+####
 
 
 def contract_set_via_RPC(contract, arg, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
@@ -190,7 +333,9 @@ def try_contract_set_via_RPC(contract, steps=3):
     
 # CHOOSE which route to choose (web3 / RPC) depending on constant ROUTE
 contract_set = contract_set_via_web3   if ROUTE=="web3" else contract_set_via_RPC
-
+contract_mint_1155_foundation = contract_mint_1155_foundation_via_web3   if ROUTE=="web3" else contract_mint_1155_foundation_via_RPC
+contract_gift_1155_foundation = contract_gift_1155_foundation_via_web3   if ROUTE=="web3" else contract_gift_1155_foundation_via_RPC
+contract_burn_1155_foundation = contract_burn_1155_foundation_via_web3   if ROUTE=="web3" else contract_burn_1155_foundation_via_RPC
 
 ################################################################
 ### 
@@ -216,6 +361,77 @@ def many_transactions_consecutive(contract, numTx):
         txs.append(tx)
     return txs
         
+def many_transactions_consecutive_foundation(contract, numTx):
+    """
+    choose the method
+    """
+    ch_method=None
+    if len(sys.argv)==4:
+        ch_method=sys.argv[3]
+    
+
+    if ch_method=="ERC1155MINT":
+       return many_transactions_consecutive_foundation_mint1155(contract,numTx)
+    elif ch_method=="ERC1155GIFT":
+       return many_transactions_consecutive_foundation_gift1155(contract,numTx)
+    elif ch_method=="ERC1155BURN":
+        return many_transactions_consecutive_foundation_burn1155(contract,numTx)
+    elif ch_method=="ERC721MINT":
+        pass
+    elif ch_method=="ERC721GIFT":
+        pass
+    return None
+        
+
+def many_transactions_consecutive_foundation_mint1155(contract, numTx):
+    """
+    naive approach, blocking --> 15 TPS
+    """
+    print ("send %d transactions, non-async, one after the other:\n" % (numTx))
+    txs = []
+    tokenIds = []
+    for i in range(numTx):
+        serialNo=i+1
+        tokenId=int(round(time.time() * 1000))+serialNo
+        tx = contract_mint_1155_foundation(contract,tokenId, serialNo)
+        print ("foundation.mintItem() transaction submitted: {0} \n-------\n".format(tx)) # Web3.toHex(tx)) # new web3
+        txs.append(tx)
+        tokenIds.append(tokenId)
+
+    saveTokenIdsToDisk(tokenIds)
+    print("save ERC1155 mint to file. path={0}".format(FILE_CONTRACT_TOKENID))
+    
+    return txs
+ 
+def many_transactions_consecutive_foundation_gift1155(contract, numTx):
+    """
+    naive approach, blocking --> 15 TPS
+    """
+    print ("send %d transactions, non-async, one after the other:\n" % (numTx))
+    txs = []
+    tokenIds = loadTokenIdsFromDisk()
+    for i in range(len(tokenIds)):
+        tokenId=tokenIds[i]
+        tx = contract_gift_1155_foundation(contract,tokenId, i)
+        print ("foundation.ERC1155.gift() transaction submitted: {0} \n-------\n".format(tx)) # Web3.toHex(tx)) # new web3
+        txs.append(tx)    
+    return txs
+ 
+def many_transactions_consecutive_foundation_burn1155(contract, numTx):
+    """
+    naive approach, blocking --> 15 TPS
+    """
+    print ("send %d transactions, non-async, one after the other:\n" % (numTx))
+    txs = []
+    tokenIds = loadTokenIdsFromDisk()
+    for i in range(len(tokenIds)):
+        tokenId=tokenIds[i]
+        tx = contract_burn_1155_foundation(contract,tokenId, i)
+        print ("foundation.ERC1155.burn() transaction submitted: {0} \n-------\n".format(tx)) # Web3.toHex(tx)) # new web3
+        txs.append(tx)    
+    return txs
+ 
+
 
 
 def many_transactions_threaded(contract, numTx):
@@ -382,7 +598,7 @@ def getReceipts_multithreaded(tx_hashes, timeout):
     """
     
     tx_receipts = {}
-    print("Waiting for %d transaction receipts, can possibly take a while ..." % len(tx_hashes))
+    print("Waiting for {0} transaction receipts in {1} timeout, can possibly take a while ...".format(len(tx_hashes),timeout))
     threads = []    
     for tx_hash in tx_hashes:
         t = Thread(target = receiptGetter,
@@ -397,7 +613,7 @@ def getReceipts_multithreaded(tx_hashes, timeout):
     return tx_receipts
 
 
-def controlSample_transactionsSuccessful(txs, sampleSize=50, timeout=100):
+def controlSample_transactionsSuccessful(txs, sampleSize=30, timeout=150):
     """
     Makes sure that the transactions were actually successful, 
     and did not fail because e.g. running out of gas, etc.
@@ -434,7 +650,7 @@ def controlSample_transactionsSuccessful(txs, sampleSize=50, timeout=100):
         # print ((tx_hash, status, tx_receipt.gasUsed ))
         if not hasTxSucceeded(tx_receipt):
             success = False
-            print ("Transaction NOT successful:", tx_hash, tx_receipt)
+            print ("Transaction NOT successful:{0} {1}\n".format( tx_hash, tx_receipt))
             badCounter = badCounter+1 
     # pprint (dict(tx_receipt))
 
@@ -605,8 +821,8 @@ def check_CLI_or_syntax_info_and_exit():
     """
     
     #print ("len(sys.argv)=", len(sys.argv))
-    
-    if not (2 <= len(sys.argv) <= 4):
+    print("sys.argv={0} and it's len={1}".format(sys.argv,len(sys.argv)))
+    if not (2 <= len(sys.argv) <= 5):
         print ("Needs parameters:")
         print ("%s numTransactions algorithm [workers]" % sys.argv[0])
         print ("at least numTransactions, e.g.")
@@ -634,7 +850,9 @@ def sendmany(contract):
     if len(sys.argv)==2 or sys.argv[2]=="sequential":
         
         # blocking, non-async
-        txs=many_transactions_consecutive(contract, numTransactions)  
+        #txs=many_transactions_consecutive(contract, numTransactions)  
+        print("\n foundation====>sequential:mint,gift,burn. \n")
+        txs = many_transactions_consecutive_foundation(contract, numTransactions)
         
     elif sys.argv[2]=="threaded1":
         txs=many_transactions_threaded(contract, numTransactions)
@@ -663,7 +881,7 @@ def sendmany(contract):
         exit()
 
         
-    print ("%d transaction hashes recorded, examples: %s" % (len(txs), txs[:2]))
+    print ("%d transaction hashes recorded, examples like: %s" % (len(txs), txs[:2]))
     
     return txs
 

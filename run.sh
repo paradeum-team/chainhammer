@@ -5,10 +5,10 @@ TPSLOG=logs/tps.py.log
 DEPLOYLOG=logs/deploy.py.log
 SENDLOG=logs/send.py.log
 
-if [ -z "$CH_TXS" ] || [ -z "$CH_THREADING" ]; then 
-    echo "You must set 2 ENV variables, examples:"
-    echo "export CH_TXS=1000 CH_THREADING=sequential"
-    echo "export CH_TXS=5000 CH_THREADING=\"threaded2 20\""
+if [ -z "$CH_TXS" ] || [ -z "$CH_THREADING" ] || [ -z "$CH_METHOD" ]; then 
+    echo "You must set 3 ENV variables, examples:"
+    echo "export CH_TXS=1000 CH_THREADING=sequential CH_METHOD=ERC1155MINT(ERC1155MINT, ERC1155GIFT,ERC1155BURN,ERC721MINT,ERC721GIFT)" #ERC1155MINT, ERC1155GIFT,ERC1155BURN,ERC721MINT,ERC721GIFT
+    echo "export CH_TXS=5000 CH_THREADING=\"threaded2 20\"  CH_METHOD=ERC1155MINT(ERC1155MINT, ERC1155GIFT,ERC1155BURN,ERC721MINT,ERC721GIFT) "
     exit
 fi
 
@@ -94,7 +94,8 @@ title deploy.py
 echo Deploy the smartContract, deploy.py will then trigger tps.py to START counting. 
 echo Logging into file $DEPLOYLOG.
 echo 
-./deploy.py > "../$DEPLOYLOG"
+#./deploy.py > "../$DEPLOYLOG"
+echo You should deploy the contract offline. then  update the contract-address.json and contract-abi.json 
 sleep 0
 echo
 
@@ -103,7 +104,7 @@ echo Send $CH_TXS transactions with non/concurrency algo \'$CH_THREADING\', plus
 echo Then send.py triggers tps.py to end counting. Logging all into file $SENDLOG. 
 echo
 
-./send.py $CH_TXS $CH_THREADING > "../$SENDLOG"
+./send.py $CH_TXS $CH_THREADING $CH_METHOD > "../$SENDLOG"
 
 echo
 
