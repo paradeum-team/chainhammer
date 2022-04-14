@@ -231,7 +231,9 @@ def contract_gift_1155_foundation_via_RPC(contract, tokenId,serialNo, hashes = N
     method_ID = contract_method_ID("gift", contract.abi) # TODO: make this "set" flexible for any method name
     #铸币参数address,tokenId，amount，uri
     fromAddress = w3.eth.defaultAccount
-    toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
+    toAddress=w3.eth.defaultAccount
+    if len(NFT_GIFT_ADDRESS)==0:
+        toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
     giftAmount = NFT_GIFT_AMOUNT_PER
     argsTrups=(fromAddress,toAddress,tokenId,giftAmount)
     
@@ -300,7 +302,10 @@ def contract_gift_721_foundation_via_RPC(contract, tokenId,serialNo, hashes = No
     method_ID = contract_method_ID("gift", contract.abi) # TODO: make this "set" flexible for any method name
     #铸币参数address,tokenId，amount，uri
     fromAddress = w3.eth.defaultAccount
-    toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
+    toAddress=w3.eth.defaultAccount
+    if len(NFT_GIFT_ADDRESS)==0:
+        toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
+
     argsTrups=(fromAddress,toAddress,tokenId)
     
     print('序号{0}参数长度{1},vlaue={2}： '.format(serialNo,len(argsTrups),argsTrups))
