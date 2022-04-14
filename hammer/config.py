@@ -14,8 +14,8 @@
 
 # better keep the same port :8545 everywhere, and instead
 # patch the docker-compose.yml files, see ../networks/quorum-configure.sh
-RPCaddress='http://172.17.132.231:8545'
-RPCaddress2='http://172.17.132.231:8545'
+RPCaddress='http://localhost:8545'
+RPCaddress2='http://localhost:8545'
 
 # use this for unittesting with TestRPCProvider
 # RPCaddress, RPCaddress2 = None, None
