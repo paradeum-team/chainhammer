@@ -232,7 +232,7 @@ def contract_gift_1155_foundation_via_RPC(contract, tokenId,serialNo, hashes = N
     #铸币参数address,tokenId，amount，uri
     fromAddress = w3.eth.defaultAccount
     toAddress=w3.eth.defaultAccount
-    if len(NFT_GIFT_ADDRESS)==0:
+    if len(NFT_GIFT_ADDRESS)>0:
         toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
     giftAmount = NFT_GIFT_AMOUNT_PER
     argsTrups=(fromAddress,toAddress,tokenId,giftAmount)
@@ -303,7 +303,7 @@ def contract_gift_721_foundation_via_RPC(contract, tokenId,serialNo, hashes = No
     #铸币参数address,tokenId，amount，uri
     fromAddress = w3.eth.defaultAccount
     toAddress=w3.eth.defaultAccount
-    if len(NFT_GIFT_ADDRESS)==0:
+    if len(NFT_GIFT_ADDRESS)>0:
         toAddress = w3.toChecksumAddress(NFT_GIFT_ADDRESS.lower())
 
     argsTrups=(fromAddress,toAddress,tokenId)
