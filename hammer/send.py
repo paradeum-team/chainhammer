@@ -320,8 +320,6 @@ def contract_exec_RPC(data, hashes = None,privateFor=PRIVATE_FOR, gas=GAS_FOR_SE
     """
     call the rpc 
     """
-
-    print ("unlock: ", unlockAccount())
    
     txParameters = {'from': w3.eth.defaultAccount, 
                     'to' : contract.address,
@@ -445,6 +443,8 @@ def many_transactions_consecutive_foundation(contract, numTx):
         ch_method=sys.argv[3]
     
 
+    print ("unlock: ", unlockAccount())
+    
     if ch_method=="ERC1155MINT":
        return many_transactions_consecutive_foundation_mint1155(contract,numTx)
     elif ch_method=="ERC1155GIFT":
