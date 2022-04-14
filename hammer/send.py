@@ -320,6 +320,8 @@ def contract_exec_RPC(data, hashes = None,privateFor=PRIVATE_FOR, gas=GAS_FOR_SE
     """
     call the rpc 
     """
+
+    print ("unlock: ", unlockAccount())
    
     txParameters = {'from': w3.eth.defaultAccount, 
                     'to' : contract.address,
