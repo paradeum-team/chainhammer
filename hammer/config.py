@@ -93,8 +93,8 @@ EXAMPLE_BIN = "0x6060604052341561000f57600080fd5b6040516020806101498339810160405
 
 # contract files:
 FILE_CONTRACT_SOURCE  = "contract.sol"
-FILE_CONTRACT_ABI     = "contract-abi.json"
-FILE_CONTRACT_ADDRESS = "contract-address.json"
+FILE_CONTRACT_ABI     = "contract-abi-erc1155.json"
+FILE_CONTRACT_ADDRESS = "contract-address-erc1155.json"
 FILE_CONTRACT_TOKENID = "contract-tokenid.json" # 铸币时，保存tokenId
 NFT_MINT_AMOUNT_PER = 500  # 单个nft铸币的数量(1155)
 NFT_BURN_AMOUNT_PER=10 #销毁数量(1155)
