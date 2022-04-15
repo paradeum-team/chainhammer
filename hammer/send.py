@@ -442,9 +442,7 @@ def many_transactions_consecutive_foundation(contract, numTx):
     if len(sys.argv)==4:
         ch_method=sys.argv[3]
     
-
-    print ("unlock: ", unlockAccount())
-    
+    print("many_transactions_consecutive_foundation...")    
     if ch_method=="ERC1155MINT":
        return many_transactions_consecutive_foundation_mint1155(contract,numTx)
     elif ch_method=="ERC1155GIFT":
