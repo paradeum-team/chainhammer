@@ -14,6 +14,8 @@
 
 # better keep the same port :8545 everywhere, and instead
 # patch the docker-compose.yml files, see ../networks/quorum-configure.sh
+#RPCaddress='http://localhost:8545'
+#RPCaddress2='http://localhost:8545'
 RPCaddress='http://localhost:8545'
 RPCaddress2='http://localhost:8545'
 
@@ -97,7 +99,7 @@ FILE_CONTRACT_ABI     = "contract-abi-erc1155.json"
 FILE_CONTRACT_ADDRESS = "contract-address-erc1155.json"
 FILE_CONTRACT_TOKENID = "contract-tokenid.json" # 铸币时，保存tokenId
 NFT_MINT_AMOUNT_PER = 500  # 单个nft铸币的数量(1155)
-NFT_BURN_AMOUNT_PER=10 #销毁数量(1155)
+NFT_BURN_AMOUNT_PER=1 #销毁数量(1155)
 NFT_GIFT_AMOUNT_PER = 10 # 赠予数量(1155)
 NFT_GIFT_ADDRESS = "" #赠予地址to，如果不空则为启用，如果为空则使用默认账户的交易账户
 NFT_TOKEN_URI="https://pnode.solarfs.io/dn/file/1e00000000000e57f41272545f3403c31eef506c78a37399f3456e9ce936756204061c9fb5281fa541a2b2983cb5d005d77f6edfeaffe57ac9c79fee3762969e/meta8.json" #TOKEN_URI

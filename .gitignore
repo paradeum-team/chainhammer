@@ -23,6 +23,7 @@ account-passphrase.txt
 #contract-address.json
 last-experiment.json
 contract-tokenid.json
+contract-tokenid-*.json
 
 # Eclipse project files:
 .project

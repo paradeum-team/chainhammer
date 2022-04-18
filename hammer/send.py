@@ -64,7 +64,7 @@ def contract_mint_1155_foundation_via_web3(contract, tokenId,serialNo, hashes = 
     if privateFor:
         txParameters['privateFor'] = privateFor  # untested
         
-    # pprint (txParameters)
+    # print (txParameters)
     
     if PARITY_UNLOCK_EACH_TRANSACTION:
         unlockAccount()
@@ -212,7 +212,7 @@ def contract_mint_1155_foundation_via_RPC(contract, tokenId,serialNo, hashes = N
     mintAmount=NFT_MINT_AMOUNT_PER
     argsTrups=(w3.eth.defaultAccount,tokenId,mintAmount,uri)
     
-    print('序号{0}参数长度{1},vlaue={2}： '.format(serialNo,len(argsTrups),argsTrups))
+    print('mint 1155 序号{0}参数长度{1},vlaue={2}： '.format(serialNo,len(argsTrups),argsTrups))
     data=contract.encodeABI(fn_name="mintItem", args=argsTrups)
     print("inputData={}".format(data))
 
@@ -483,7 +483,10 @@ def many_transactions_consecutive_foundation_gift1155(contract, numTx):
     print ("send %d transactions, non-async, one after the other:\n" % (numTx))
     txs = []
     tokenIds = loadTokenIdsFromDisk()
-    for i in range(len(tokenIds)):
+    loopNum=int(numTx/len(tokenIds))
+
+    for j in range(loopNum):
+      for i in range(len(tokenIds)):
         tokenId=tokenIds[i]
         tx = contract_gift_1155_foundation(contract,tokenId, i)
         print ("foundation.ERC1155.gift() transaction submitted: {0} \n-------\n".format(tx)) # Web3.toHex(tx)) # new web3
@@ -497,7 +500,9 @@ def many_transactions_consecutive_foundation_burn1155(contract, numTx):
     print ("send %d transactions, non-async, one after the other:\n" % (numTx))
     txs = []
     tokenIds = loadTokenIdsFromDisk()
-    for i in range(len(tokenIds)):
+    loopNum=int(numTx/len(tokenIds))
+    for j in range(loopNum):
+      for i in range(len(tokenIds)):
         tokenId=tokenIds[i]
         tx = contract_burn_1155_foundation(contract,tokenId, i)
         print ("foundation.ERC1155.burn() transaction submitted: {0} \n-------\n".format(tx)) # Web3.toHex(tx)) # new web3
@@ -1007,6 +1012,8 @@ if __name__ == '__main__':
     # try_contract_set_via_RPC(contract);  exit()
 
     w3.eth.defaultAccount = w3.eth.accounts[0] # set first account as sender
+    print ("unlock: ", unlockAccount(172800,None))
+
     contract = initialize_fromAddress()
 
     txs = sendmany(contract)

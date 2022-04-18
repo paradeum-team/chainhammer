@@ -90,8 +90,8 @@ def clientType(w3):
 
     consensus = "clique"
     chainName = "poa"
-    networkId = 65534
-    chainId = 65534
+    networkId = 65533
+    chainId = 65533
     
     try:
         answer = curl_post(method="net_version")
