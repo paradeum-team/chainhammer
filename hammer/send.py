@@ -38,6 +38,7 @@ from hammer.config import NFT_MINT_AMOUNT_PER, NFT_BURN_AMOUNT_PER,NFT_GIFT_AMOU
 from hammer.deploy import loadFromDisk, loadTokenIdsFromDisk, saveTokenIdsToDisk
 from hammer.clienttools import web3connection, unlockAccount
 
+import math
 
 ##########################
 ## smart contract related:
@@ -483,7 +484,7 @@ def many_transactions_consecutive_foundation_gift1155(contract, numTx):
     print ("send %d transactions, non-async, one after the other:\n" % (numTx))
     txs = []
     tokenIds = loadTokenIdsFromDisk()
-    loopNum=int(numTx/len(tokenIds))
+    loopNum=math.ceil(numTx/len(tokenIds))
 
     for j in range(loopNum):
       for i in range(len(tokenIds)):
@@ -500,7 +501,7 @@ def many_transactions_consecutive_foundation_burn1155(contract, numTx):
     print ("send %d transactions, non-async, one after the other:\n" % (numTx))
     txs = []
     tokenIds = loadTokenIdsFromDisk()
-    loopNum=int(numTx/len(tokenIds))
+    loopNum=math.ceil(numTx/len(tokenIds))
     for j in range(loopNum):
       for i in range(len(tokenIds)):
         tokenId=tokenIds[i]
@@ -525,7 +526,7 @@ def many_transactions_consecutive_foundation_mint721(contract, numTx):
         tokenIds.append(tokenId)
 
     saveTokenIdsToDisk(tokenIds)
-    print("save ERC1155 mint to file. path={0}".format(FILE_CONTRACT_TOKENID))
+    print("save ERC721 mint to file. path={0}".format(FILE_CONTRACT_TOKENID))
     
     return txs
   
@@ -537,7 +538,9 @@ def many_transactions_consecutive_foundation_gift721(contract, numTx):
     print ("send %d transactions, non-async, one after the other:\n" % (numTx))
     txs = []
     tokenIds = loadTokenIdsFromDisk()
-    for i in range(len(tokenIds)):
+    loopNum=math.ceil(numTx/len(tokenIds))
+    for j in range(loopNum):
+      for i in range(len(tokenIds)):
         tokenId=tokenIds[i]
         tx = contract_gift_721_foundation(contract,tokenId, i)
         print ("foundation.ERC721.gift() transaction submitted: {0} \n-------\n".format(tx)) # Web3.toHex(tx)) # new web3
